@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 import base64
-
+import os
 app = Flask(__name__)
 
 client = OpenAI(
-    api_key="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",
+    api_key=os.environ.get("OPENROUTER_API_KEY"),
     base_url="https://openrouter.ai/api/v1"
 )
 
@@ -55,4 +55,6 @@ def analyze():
         return jsonify({"success": False, "error": str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
