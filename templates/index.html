@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FACE.AI — Оценка внешности</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --dark: #111111;
+            --card: #181818;
+            --border: #2a2a2a;
+            --gold: #c9a84c;
+            --gold-light: #e8c97a;
+            --white: #f0ece4;
+            --muted: #888;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--black);
+            color: var(--white);
+            font-family: 'Manrope', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.03) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes bgPulse {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+
+        .container {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeDown 0.8s ease both;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 64px;
+            letter-spacing: 8px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .tagline {
+            font-size: 12px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background: var(--gold);
+            margin: 16px auto 0;
+            opacity: 0.5;
+        }
+
+        /* Upload Zone */
+        .upload-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 8px;
+            animation: fadeUp 0.8s ease 0.2s both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .upload-zone {
+            border: 1.5px dashed var(--border);
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--gold);
+            background: rgba(201,168,76,0.03);
+        }
+
+        .upload-zone.has-image {
+            padding: 0;
+            border-style: solid;
+            border-color: var(--gold);
+        }
+
+        #preview {
+            display: none;
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .upload-zone.has-image #preview { display: block; }
+        .upload-zone.has-image .upload-placeholder { display: none; }
+
+        .upload-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover .upload-icon {
+            border-color: var(--gold);
+            transform: scale(1.1);
+        }
+
+        .upload-icon svg {
+            stroke: var(--gold);
+        }
+
+        .upload-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .upload-sub {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        #fileInput { display: none; }
+
+        /* Button */
+        .btn-analyze {
+            width: 100%;
+            padding: 18px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--black);
+            border: none;
+            border-radius: 12px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201,168,76,0.3);
+        }
+
+        .btn-analyze:active { transform: translateY(0); }
+        .btn-analyze.visible { display: block; animation: fadeUp 0.4s ease both; }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .loading.visible { display: block; animation: fadeUp 0.4s ease both; }
+
+        .loading-bars {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .loading-bars span {
+            width: 4px;
+            height: 32px;
+            background: var(--gold);
+            border-radius: 4px;
+            animation: barPulse 1.2s ease-in-out infinite;
+        }
+
+        .loading-bars span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-bars span:nth-child(3) { animation-delay: 0.4s; }
+        .loading-bars span:nth-child(4) { animation-delay: 0.6s; }
+        .loading-bars span:nth-child(5) { animation-delay: 0.8s; }
+
+        @keyframes barPulse {
+            0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
+            50% { transform: scaleY(1); opacity: 1; }
+        }
+
+        .loading-text {
+            font-size: 13px;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Results */
+        .results {
+            display: none;
+            margin-top: 24px;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .results.visible { display: block; }
+
+        /* Score Block */
+        .score-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-block::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .score-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .score-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 96px;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+        }
+
+        .score-slash {
+            font-family: 'Manrope', sans-serif;
+            font-size: 20px;
+            color: var(--muted);
+            -webkit-text-fill-color: var(--muted);
+        }
+
+        /* Archetype */
+        .archetype-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .archetype-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .archetype-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            letter-spacing: 3px;
+            color: var(--gold-light);
+        }
+
+        .archetype-icon {
+            font-size: 40px;
+        }
+
+        /* Details Card */
+        .details-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 12px;
+        }
+
+        .details-section-title {
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .details-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .details-list li {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--white);
+            padding-left: 18px;
+            position: relative;
+            font-weight: 400;
+        }
+
+        .details-list li::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .details-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 20px 0;
+        }
+
+        /* Итог */
+        .summary-block {
+            background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.03) 100%);
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .summary-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--white);
+            font-weight: 400;
+        }
+
+        /* Reset button */
+        .btn-reset {
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reset:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 12px;
+            color: #444;
+            letter-spacing: 1px;
+        }
+
+        /* Error */
+        .error-msg {
+            background: rgba(220, 60, 60, 0.1);
+            border: 1px solid rgba(220,60,60,0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: #ff6b6b;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .error-msg.visible { display: block; animation: fadeUp 0.4s ease both; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">FACE.AI</div>
+            <div class="tagline">Анализ внешности на основе ИИ</div>
+            <div class="divider"></div>
+        </header>
+
+        <div class="upload-card">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-placeholder">
+                    <div class="upload-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="3"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21,15 16,10 5,21"/>
+                        </svg>
+                    </div>
+                    <div class="upload-title">Загрузи своё фото</div>
+                    <div class="upload-sub">JPG, PNG · Лицо должно быть чётко видно</div>
+                </div>
+                <img id="preview" alt="Preview">
+            </div>
+            <input type="file" id="fileInput" accept="image/*">
+            <button class="btn-analyze" id="btnAnalyze">Анализировать</button>
+        </div>
+
+        <div class="error-msg" id="errorMsg"></div>
+
+        <div class="loading" id="loading">
+            <div class="loading-bars">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="loading-text">Анализируем...</div>
+        </div>
+
+        <div class="results" id="results">
+            <div class="score-block">
+                <div class="score-label">Оценка внешности</div>
+                <div class="score-number" id="scoreNumber">—<span class="score-slash">/10</span></div>
+            </div>
+
+            <div class="archetype-block">
+                <div>
+                    <div class="archetype-label">Архетип лица</div>
+                    <div class="archetype-name" id="archetypeName">—</div>
+                </div>
+                <div class="archetype-icon" id="archetypeIcon">🦊</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-section-title">Сильные стороны</div>
+                <ul class="details-list" id="strengthsList"></ul>
+                <div class="details-divider"></div>
+                <div class="details-section-title">Что улучшить</div>
+                <ul class="details-list" id="improveList"></ul>
+            </div>
+
+            <div class="summary-block">
+                <div class="summary-label">Итог</div>
+                <div class="summary-text" id="summaryText"></div>
+            </div>
+
+            <button class="btn-reset" id="btnReset">Анализировать ещё раз</button>
+        </div>
+
+        <footer>FACE.AI © 2025</footer>
+    </div>
+
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const btnAnalyze = document.getElementById('btnAnalyze');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const errorMsg = document.getElementById('errorMsg');
+        const btnReset = document.getElementById('btnReset');
+
+        let selectedFile = null;
+
+        const archetypeIcons = {
+            'лис': '🦊', 'fox': '🦊',
+            'охотник': '🦅', 'hunter': '🦅',
+            'красавчик': '✨', 'pretty boy': '✨',
+            'олень': '🦌', 'deer': '🦌',
+            'медведь': '🐻', 'bear': '🐻'
+        };
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+        uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) handleFile(file);
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files[0]) handleFile(fileInput.files[0]);
+        });
+
+        function handleFile(file) {
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                uploadZone.classList.add('has-image');
+                btnAnalyze.classList.add('visible');
+                results.classList.remove('visible');
+                errorMsg.classList.remove('visible');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        btnAnalyze.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            btnAnalyze.classList.remove('visible');
+            loading.classList.add('visible');
+            results.classList.remove('visible');
+            errorMsg.classList.remove('visible');
+
+            const formData = new FormData();
+            formData.append('photo', selectedFile);
+
+            try {
+                const response = await fetch('/analyze', { method: 'POST', body: formData });
+                const data = await response.json();
+
+                loading.classList.remove('visible');
+
+                if (!data.success) throw new Error(data.error || 'Ошибка сервера');
+
+                parseAndDisplay(data.result);
+
+            } catch (err) {
+                loading.classList.remove('visible');
+                errorMsg.textContent = 'Ошибка: ' + err.message;
+                errorMsg.classList.add('visible');
+                btnAnalyze.classList.add('visible');
+            }
+        });
+
+        function parseAndDisplay(text) {
+            // Parse score
+            const scoreMatch = text.match(/ОЦЕНКА:\s*([\d.]+)/i);
+            const score = scoreMatch ? scoreMatch[1] : '—';
+            document.getElementById('scoreNumber').innerHTML = score + '<span class="score-slash">/10</span>';
+
+            // Parse archetype
+            const archetypeMatch = text.match(/АРХЕТИП:\s*(.+)/i);
+            const archetype = archetypeMatch ? archetypeMatch[1].trim() : '—';
+            document.getElementById('archetypeName').textContent = archetype.toUpperCase();
+            const icon = archetypeIcons[archetype.toLowerCase()] || '✦';
+            document.getElementById('archetypeIcon').textContent = icon;
+
+            // Parse strengths
+            const strengthsMatch = text.match(/СИЛЬНЫЕ СТОРОНЫ:([\s\S]*?)(?=ЧТО УЛУЧШИТЬ:|$)/i);
+            const strengthsList = document.getElementById('strengthsList');
+            strengthsList.innerHTML = '';
+            if (strengthsMatch) {
+                const items = strengthsMatch[1].match(/[-•]\s*(.+)/g) || [];
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.replace(/^[-•]\s*/, '').trim();
+                    strengthsList.appendChild(li);
+                });
+            }
+
+            // Parse improvements
+            const improveMatch = text.match(/ЧТО УЛУЧШИТЬ:([\s\S]*?)(?=ИТОГ:|$)/i);
+            const improveList = document.getElementById('improveList');
+            improveList.innerHTML = '';
+            if (improveMatch) {
+                const items = improveMatch[1].match(/[-•]\s*(.+)/g) || [];
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.replace(/^[-•]\s*/, '').trim();
+                    improveList.appendChild(li);
+                });
+            }
+
+            // Parse summary
+            const summaryMatch = text.match(/ИТОГ:\s*([\s\S]+)/i);
+            document.getElementById('summaryText').textContent = summaryMatch ? summaryMatch[1].trim() : '';
+
+            results.classList.add('visible');
+        }
+
+        btnReset.addEventListener('click', () => {
+            selectedFile = null;
+            preview.src = '';
+            uploadZone.classList.remove('has-image');
+            btnAnalyze.classList.remove('visible');
+            results.classList.remove('visible');
+            errorMsg.classList.remove('visible');
+            fileInput.value = '';
+        });
+    </script>
+</body>
+</html>
