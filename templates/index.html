@@ -506,6 +506,10 @@
                 </div>
                 <div class="archetype-icon">⭐</div>
             </div>
+            <div class="details-block">
+                <div class="details-section-title">Описание архетипа</div>
+                <p id="archetypeDescription" style="font-size:14px;line-height:1.7;color:var(--white);font-weight:400;"></p>
+            </div>
 
             <div class="details-block">
                 <div class="details-section-title">Сильные стороны</div>
@@ -616,6 +620,8 @@
             document.getElementById('archetypeIcon').textContent = icon;
             const celebrityMatch = text.match(/ПОХОЖ НА:\s*(.+)/i);
 document.getElementById('celebrityName').textContent = celebrityMatch ? celebrityMatch[1].trim() : '—';
+const descriptionMatch = text.match(/ОПИСАНИЕ АРХЕТИПА:\s*(.+)/i);
+document.getElementById('archetypeDescription').textContent = descriptionMatch ? descriptionMatch[1].trim() : '—';
 
             // Parse strengths
             const strengthsMatch = text.match(/СИЛЬНЫЕ СТОРОНЫ:([\s\S]*?)(?=ЧТО УЛУЧШИТЬ:|$)/i);
