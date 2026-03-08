@@ -594,7 +594,7 @@
             <div class="card-label">Сильные стороны</div>
             <ul class="detail-list" id="strengthsList"></ul>
             <div class="divider-line"></div>
-            <div class="card-label">Зоны роста</div>
+            <div class="card-label">Что прокачать</div>
             <ul class="detail-list" id="improveList"></ul>
         </div>
 
@@ -689,23 +689,39 @@
         }
     });
 
-    function getBlock(text, label, nextLabels) {
-        const pattern = new RegExp(label + ':?\\s*([\\s\\S]*?)(?=' + nextLabels.join(':|') + ':|$)', 'i');
-        const match = text.match(pattern);
+    // Надёжный парсер блоков
+    const ALL_HEADERS = [
+        'ОЦЕНКА', 'АРХЕТИП', 'ПОХОЖА? НА', 'РАЗБОР ЛИЦА',
+        'ЦВЕТОТИП', 'ТИПАЖ КИББИ', 'ПРИЧЁСКА',
+        'СИЛЬНЫЕ СТОРОНЫ', 'ЧТО ПРОКАЧАТЬ', 'ЧТО УЛУЧШИТЬ',
+        'ПЛАН НА 30 ДНЕЙ', 'ПОТЕНЦИАЛ'
+    ];
+
+    function getBlock(text, labelPattern) {
+        const stopPatterns = ALL_HEADERS.map(h => h + ':').join('|');
+        const re = new RegExp('(?:' + labelPattern + '):?\\s*([\\s\\S]*?)(?=(?:' + stopPatterns.replace(/\.\*/g,'.*') + ')(?:\\s|$)|$)', 'i');
+        const match = text.match(re);
         return match ? match[1].trim() : '';
     }
 
-    function getFirstLine(block) {
-        return block.split('\n')[0].trim();
+    function firstLine(block) {
+        const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+        return (lines[0] || '').replace(/^[-•*]\s*/, '').trim();
     }
 
-    function getRemainingLines(block) {
-        const lines = block.split('\n');
-        return lines.slice(1).join('\n').trim();
+    function restLines(block) {
+        const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+        return lines.slice(1).join(' ').trim();
     }
 
-    function parseList(text) {
-        return (text.match(/[-•*]\s*(.+)/g) || []).map(i => i.replace(/^[-•*]\s*/, '').trim());
+    function parseList(block) {
+        const items = [];
+        block.split('\n').forEach(line => {
+            const clean = line.trim();
+            const m = clean.match(/^[-•*]\s*(.+)/) || clean.match(/^\d+\.\s*(.+)/);
+            if (m) items.push(m[1].trim());
+        });
+        return items;
     }
 
     function parseAndDisplay(text) {
@@ -714,26 +730,28 @@
         const scoreMatch = text.match(/ОЦЕНКА:\s*([\d.]+)/i);
         const score = scoreMatch ? scoreMatch[1] : '—';
         document.getElementById('scoreNumber').innerHTML = score + '<span class="score-slash">/10</span>';
-        const scoreBlock = getBlock(text, 'ОЦЕНКА', ['АРХЕТИП', 'ПОХОЖ НА', 'РАЗБОР ЛИЦА']);
-        const scoreLines = scoreBlock.split('\n').filter(l => !l.match(/^\d/));
-        document.getElementById('scoreComment').textContent = scoreLines.slice(1).join(' ').trim();
+        const scoreBlock = getBlock(text, 'ОЦЕНКА');
+        const scoreComment = scoreBlock.split('\n').map(l => l.trim())
+            .filter(l => l && !l.match(/^[\d.]+\/? ?\d*$/)).join(' ');
+        document.getElementById('scoreComment').textContent = scoreComment;
 
         // АРХЕТИП
-        const archetypeBlock = getBlock(text, 'АРХЕТИП', ['ПОХОЖ НА', 'РАЗБОР ЛИЦА', 'ЦВЕТОТИП']);
-        const archetypeLine = getFirstLine(archetypeBlock);
+        const archetypeBlock = getBlock(text, 'АРХЕТИП');
+        const archetypeLine = firstLine(archetypeBlock);
         document.getElementById('archetypeName').textContent = archetypeLine.toUpperCase();
         const icon = archetypeIcons[archetypeLine.toLowerCase()] || '✦';
         document.getElementById('archetypeIcon').textContent = icon;
-        document.getElementById('archetypeDesc').textContent = getRemainingLines(archetypeBlock);
+        document.getElementById('archetypeDesc').textContent = restLines(archetypeBlock);
 
-        // ПОХОЖ НА
-        const celebBlock = getBlock(text, 'ПОХОЖ НА', ['РАЗБОР ЛИЦА', 'ЦВЕТОТИП', 'ТИПАЖ']);
-        const celebLine = getFirstLine(celebBlock);
-        document.getElementById('celebrityName').textContent = celebLine;
-        document.getElementById('celebrityDesc').textContent = getRemainingLines(celebBlock);
+        // ПОХОЖ/ПОХОЖА НА
+        const celebRaw = text.match(/ПОХОЖА? НА:\s*([^\n]+)/i);
+        const celebName = celebRaw ? celebRaw[1].trim() : '—';
+        document.getElementById('celebrityName').textContent = celebName;
+        const celebBlock = getBlock(text, 'ПОХОЖА? НА');
+        document.getElementById('celebrityDesc').textContent = restLines(celebBlock);
 
         // РАЗБОР ЛИЦА
-        const faceBlock = getBlock(text, 'РАЗБОР ЛИЦА', ['ЦВЕТОТИП', 'ТИПАЖ КИББИ', 'ПРИЧЁСКА', 'СИЛЬНЫЕ']);
+        const faceBlock = getBlock(text, 'РАЗБОР ЛИЦА');
         const faceItems = [
             { key: 'ГЛАЗА', icon: '👁' },
             { key: 'КОСТНАЯ СТРУКТУРА', icon: '🦴' },
@@ -744,36 +762,32 @@
         const faceContainer = document.getElementById('faceBreakdown');
         faceContainer.innerHTML = '';
         faceItems.forEach(item => {
-            const match = faceBlock.match(new RegExp('-\\s*' + item.key + ':\\s*(.+)', 'i'));
+            const match = faceBlock.match(new RegExp('-\\s*' + item.key + ':?\\s*([^\\n]+)', 'i'));
             if (match) {
                 const div = document.createElement('div');
                 div.className = 'face-item';
-                div.innerHTML = `
-                    <div class="face-icon">${item.icon}</div>
-                    <div class="face-content">
-                        <div class="face-title">${item.key}</div>
-                        <div class="face-text">${match[1].trim()}</div>
-                    </div>`;
+                div.innerHTML = `<div class="face-icon">${item.icon}</div><div class="face-content"><div class="face-title">${item.key}</div><div class="face-text">${match[1].trim()}</div></div>`;
                 faceContainer.appendChild(div);
             }
         });
 
         // ЦВЕТОТИП
-        const colorBlock = getBlock(text, 'ЦВЕТОТИП', ['ТИПАЖ КИББИ', 'ПРИЧЁСКА', 'СИЛЬНЫЕ']);
-        document.getElementById('colorTypeName').textContent = getFirstLine(colorBlock);
-        document.getElementById('colorTypeDesc').textContent = getRemainingLines(colorBlock);
+        const colorBlock = getBlock(text, 'ЦВЕТОТИП');
+        document.getElementById('colorTypeName').textContent = firstLine(colorBlock);
+        document.getElementById('colorTypeDesc').textContent = restLines(colorBlock);
 
         // ТИПАЖ КИББИ
-        const kibbeBlock = getBlock(text, 'ТИПАЖ КИББИ', ['ПРИЧЁСКА', 'СИЛЬНЫЕ', 'ЧТО УЛУЧШИТЬ']);
-        document.getElementById('kibbeName').textContent = getFirstLine(kibbeBlock);
-        document.getElementById('kibbeDesc').textContent = getRemainingLines(kibbeBlock);
+        const kibbeBlock = getBlock(text, 'ТИПАЖ КИББИ');
+        document.getElementById('kibbeName').textContent = firstLine(kibbeBlock);
+        document.getElementById('kibbeDesc').textContent = restLines(kibbeBlock);
 
-        // ПРИЧЁСКА
-        const hairBlock = getBlock(text, 'ПРИЧЁСКА', ['СИЛЬНЫЕ', 'ЧТО УЛУЧШИТЬ', 'ПЛАН']);
-        document.getElementById('hairstyleText').textContent = hairBlock;
+        // ПРИЧЁСКА — обрезаем если модель вписала лишнее
+        const hairRaw = getBlock(text, 'ПРИЧЁСКА');
+        const hairClean = hairRaw.split(/СИЛЬНЫЕ СТОРОНЫ|ЧТО ПРОКАЧАТЬ|ЧТО УЛУЧШИТЬ/i)[0].trim();
+        document.getElementById('hairstyleText').textContent = hairClean;
 
         // СИЛЬНЫЕ СТОРОНЫ
-        const strengthsBlock = getBlock(text, 'СИЛЬНЫЕ СТОРОНЫ', ['ЧТО УЛУЧШИТЬ', 'ПЛАН', 'ИТОГ']);
+        const strengthsBlock = getBlock(text, 'СИЛЬНЫЕ СТОРОНЫ');
         const strengthsList = document.getElementById('strengthsList');
         strengthsList.innerHTML = '';
         parseList(strengthsBlock).forEach(item => {
@@ -782,40 +796,45 @@
             strengthsList.appendChild(li);
         });
 
-        // ЧТО УЛУЧШИТЬ
-        const improveBlock = getBlock(text, 'ЧТО УЛУЧШИТЬ', ['ПЛАН НА 30', 'ИТОГ', 'ПОТЕНЦИАЛ']);
+        // ЧТО ПРОКАЧАТЬ / ЧТО УЛУЧШИТЬ
+        const improveRaw = getBlock(text, 'ЧТО ПРОКАЧАТЬ') || getBlock(text, 'ЧТО УЛУЧШИТЬ');
+        const improveClean = improveRaw.split(/ПЛАН НА 30|НЕДЕЛЯ\s*1/i)[0].trim();
         const improveList = document.getElementById('improveList');
         improveList.innerHTML = '';
-        parseList(improveBlock).forEach(item => {
+        parseList(improveClean).forEach(item => {
             const li = document.createElement('li');
             li.textContent = item;
             improveList.appendChild(li);
         });
 
-        // ПЛАН
-        const planBlock = getBlock(text, 'ПЛАН НА 30 ДНЕЙ', ['ПОТЕНЦИАЛ', 'ИТОГ']);
+        // ПЛАН — дедупликация, только 4 недели
+        const planBlock = getBlock(text, 'ПЛАН НА 30 ДНЕЙ');
         const planContainer = document.getElementById('planItems');
         planContainer.innerHTML = '';
-        const weekMatches = planBlock.match(/НЕДЕЛЯ\s*(\d+):\s*(.+)/gi) || [];
-        weekMatches.forEach((item, i) => {
-            const text_part = item.replace(/НЕДЕЛЯ\s*\d+:\s*/i, '').trim();
-            const div = document.createElement('div');
-            div.className = 'plan-item';
-            div.innerHTML = `
-                <div class="plan-week">W${i+1}</div>
-                <div class="plan-text">${text_part}</div>`;
-            planContainer.appendChild(div);
+        const weekMatches = planBlock.match(/(?:-\s*)?НЕДЕЛЯ\s*\d+[^:]*:\s*([^\n]+)/gi) || [];
+        const seen = new Set();
+        let wNum = 0;
+        weekMatches.forEach(item => {
+            const txt = item.replace(/^[-\s]*НЕДЕЛЯ\s*\d+[^:]*:\s*/i, '').trim();
+            if (!seen.has(txt) && wNum < 4) {
+                seen.add(txt);
+                wNum++;
+                const div = document.createElement('div');
+                div.className = 'plan-item';
+                div.innerHTML = `<div class="plan-week">W${wNum}</div><div class="plan-text">${txt}</div>`;
+                planContainer.appendChild(div);
+            }
         });
 
         // ПОТЕНЦИАЛ
-        const potentialBlock = getBlock(text, 'ПОТЕНЦИАЛ', ['$$$']);
+        const potentialBlock = getBlock(text, 'ПОТЕНЦИАЛ');
         document.getElementById('potentialText').textContent = potentialBlock;
 
         results.classList.add('visible');
         setTimeout(() => results.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
 
-    btnReset.addEventListener('click', () => {
+        btnReset.addEventListener('click', () => {
         selectedFile = null;
         preview.src = '';
         uploadZone.classList.remove('has-image');
