@@ -27,14 +27,11 @@
             overflow-x: hidden;
         }
 
-        /* Animated background */
         body::before {
             content: '';
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
             background: radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 50%),
                         radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.03) 0%, transparent 50%);
             animation: bgPulse 8s ease-in-out infinite alternate;
@@ -48,14 +45,13 @@
         }
 
         .container {
-            max-width: 560px;
+            max-width: 580px;
             margin: 0 auto;
             padding: 40px 20px 80px;
             position: relative;
             z-index: 1;
         }
 
-        /* Header */
         header {
             text-align: center;
             margin-bottom: 48px;
@@ -88,14 +84,13 @@
         }
 
         .divider {
-            width: 40px;
-            height: 1px;
+            width: 40px; height: 1px;
             background: var(--gold);
             margin: 16px auto 0;
             opacity: 0.5;
         }
 
-        /* Upload Zone */
+        /* Upload */
         .upload-card {
             background: var(--card);
             border: 1px solid var(--border);
@@ -143,8 +138,7 @@
         .upload-zone.has-image .upload-placeholder { display: none; }
 
         .upload-icon {
-            width: 56px;
-            height: 56px;
+            width: 56px; height: 56px;
             margin: 0 auto 16px;
             border: 1.5px solid var(--border);
             border-radius: 50%;
@@ -159,25 +153,11 @@
             transform: scale(1.1);
         }
 
-        .upload-icon svg {
-            stroke: var(--gold);
-        }
-
-        .upload-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .upload-sub {
-            font-size: 13px;
-            color: var(--muted);
-            font-weight: 400;
-        }
-
+        .upload-icon svg { stroke: var(--gold); }
+        .upload-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .upload-sub { font-size: 13px; color: var(--muted); font-weight: 400; }
         #fileInput { display: none; }
 
-        /* Button */
         .btn-analyze {
             width: 100%;
             padding: 18px;
@@ -201,7 +181,6 @@
             box-shadow: 0 8px 30px rgba(201,168,76,0.3);
         }
 
-        .btn-analyze:active { transform: translateY(0); }
         .btn-analyze.visible { display: block; animation: fadeUp 0.4s ease both; }
 
         /* Loading */
@@ -221,8 +200,7 @@
         }
 
         .loading-bars span {
-            width: 4px;
-            height: 32px;
+            width: 4px; height: 32px;
             background: var(--gold);
             border-radius: 4px;
             animation: barPulse 1.2s ease-in-out infinite;
@@ -254,19 +232,18 @@
 
         .results.visible { display: block; }
 
-        /* Score Block */
-        .score-block {
+        /* Card base */
+        .card {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 32px;
-            text-align: center;
+            padding: 24px 28px;
             margin-bottom: 12px;
             position: relative;
             overflow: hidden;
         }
 
-        .score-block::before {
+        .card-accent::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0;
@@ -274,12 +251,25 @@
             background: linear-gradient(90deg, transparent, var(--gold), transparent);
         }
 
-        .score-label {
+        .card-label {
             font-size: 11px;
             letter-spacing: 4px;
             text-transform: uppercase;
             color: var(--muted);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--white);
+            font-weight: 400;
+        }
+
+        /* Score */
+        .score-block {
+            text-align: center;
+            padding: 32px 28px;
         }
 
         .score-number {
@@ -300,71 +290,83 @@
             -webkit-text-fill-color: var(--muted);
         }
 
-        /* Archetype */
-        .archetype-block {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px 32px;
-            margin-bottom: 12px;
+        .score-comment {
+            font-size: 14px;
+            color: var(--white);
+            line-height: 1.6;
+            margin-top: 12px;
+            opacity: 0.85;
+        }
+
+        /* Two-col cards */
+        .two-col {
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .archetype-label {
-            font-size: 11px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 4px;
-        }
-
-        .archetype-name {
+        .big-name {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 36px;
+            font-size: 32px;
             letter-spacing: 3px;
             color: var(--gold-light);
+            margin-top: 4px;
         }
 
-        .archetype-icon {
-            font-size: 40px;
+        .big-icon { font-size: 38px; }
+
+        /* Face breakdown */
+        .face-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        /* Details Card */
-        .details-block {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px 32px;
-            margin-bottom: 12px;
+        .face-item:last-child { border-bottom: none; }
+
+        .face-icon {
+            font-size: 20px;
+            width: 32px;
+            flex-shrink: 0;
+            margin-top: 2px;
         }
 
-        .details-section-title {
+        .face-content {}
+
+        .face-title {
             font-size: 11px;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 14px;
+            color: var(--gold);
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
-        .details-list {
+        .face-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--white);
+        }
+
+        /* Lists */
+        .detail-list {
             list-style: none;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 8px;
         }
 
-        .details-list li {
+        .detail-list li {
             font-size: 14px;
             line-height: 1.6;
             color: var(--white);
             padding-left: 18px;
             position: relative;
-            font-weight: 400;
         }
 
-        .details-list li::before {
+        .detail-list li::before {
             content: '—';
             position: absolute;
             left: 0;
@@ -372,39 +374,71 @@
             font-weight: 600;
         }
 
-        .details-divider {
+        .divider-line {
             height: 1px;
             background: var(--border);
-            margin: 20px 0;
+            margin: 18px 0;
         }
 
-        /* Итог */
-        .summary-block {
-            background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.03) 100%);
-            border: 1px solid rgba(201,168,76,0.2);
-            border-radius: 16px;
-            padding: 24px 32px;
-            margin-bottom: 24px;
+        /* Plan */
+        .plan-item {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .summary-label {
-            font-size: 11px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
+        .plan-item:last-child { border-bottom: none; }
+
+        .plan-week {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
             color: var(--gold);
-            margin-bottom: 10px;
-            opacity: 0.8;
+            letter-spacing: 2px;
+            width: 40px;
+            flex-shrink: 0;
+            line-height: 1;
+            margin-top: 2px;
         }
 
-        .summary-text {
-            font-size: 15px;
-            line-height: 1.7;
+        .plan-text {
+            font-size: 14px;
+            line-height: 1.6;
             color: var(--white);
-            font-weight: 400;
         }
 
-        /* Reset button */
-        
+        /* Potential */
+        .potential-block {
+            background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.03) 100%);
+            border: 1px solid rgba(201,168,76,0.25);
+        }
+
+        /* CTA */
+        .btn-cta {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--black);
+            border: none;
+            border-radius: 12px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201,168,76,0.3);
+        }
+
         .btn-reset {
             width: 100%;
             padding: 16px;
@@ -421,23 +455,10 @@
             transition: all 0.3s ease;
         }
 
-        .btn-reset:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-        }
+        .btn-reset:hover { border-color: var(--gold); color: var(--gold); }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            margin-top: 48px;
-            font-size: 12px;
-            color: #444;
-            letter-spacing: 1px;
-        }
-
-        /* Error */
         .error-msg {
-            background: rgba(220, 60, 60, 0.1);
+            background: rgba(220,60,60,0.1);
             border: 1px solid rgba(220,60,60,0.3);
             border-radius: 12px;
             padding: 16px 20px;
@@ -448,242 +469,362 @@
         }
 
         .error-msg.visible { display: block; animation: fadeUp 0.4s ease both; }
+
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 12px;
+            color: #444;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">FACE.AI</div>
-            <div class="tagline">Анализ внешности на основе ИИ</div>
-            <div class="divider"></div>
-        </header>
+<div class="container">
+    <header>
+        <div class="logo">FACE.AI</div>
+        <div class="tagline">Экспертный анализ внешности на основе ИИ</div>
+        <div class="divider"></div>
+    </header>
 
-        <div class="upload-card">
-            <div class="upload-zone" id="uploadZone">
-                <div class="upload-placeholder">
-                    <div class="upload-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="3"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <polyline points="21,15 16,10 5,21"/>
-                        </svg>
-                    </div>
-                    <div class="upload-title">Загрузи своё фото</div>
-                    <div class="upload-sub">JPG, PNG · Лицо должно быть чётко видно</div>
+    <div class="upload-card">
+        <div class="upload-zone" id="uploadZone">
+            <div class="upload-placeholder">
+                <div class="upload-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="3"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21,15 16,10 5,21"/>
+                    </svg>
                 </div>
-                <img id="preview" alt="Preview">
+                <div class="upload-title">Загрузи своё фото</div>
+                <div class="upload-sub">JPG, PNG · Лицо должно быть чётко видно</div>
             </div>
-            <input type="file" id="fileInput" accept="image/*">
-            <button class="btn-analyze" id="btnAnalyze">Анализировать</button>
+            <img id="preview" alt="Preview">
         </div>
-
-        <div class="error-msg" id="errorMsg"></div>
-
-        <div class="loading" id="loading">
-            <div class="loading-bars">
-                <span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <div class="loading-text">Анализируем...</div>
-        </div>
-
-        <div class="results" id="results">
-            <div class="score-block">
-                <div class="score-label">Оценка внешности</div>
-                <div class="score-number" id="scoreNumber">—<span class="score-slash">/10</span></div>
-            </div>
-
-            <div class="archetype-block">
-                <div>
-                    
-                    <div class="archetype-label">Архетип лица</div>
-                    <div class="archetype-name" id="archetypeName">—</div>
-                </div>
-                <div class="archetype-icon" id="archetypeIcon">🦊</div>
-            </div>
-            <div class="archetype-block">
-                <div>
-                    <div class="archetype-label">Похож на</div>
-                    <div class="archetype-name" id="celebrityName">—</div>
-                </div>
-                <div class="archetype-icon">⭐</div>
-            </div>
-            <div class="details-block">
-                <div class="details-section-title">Описание архетипа</div>
-                <p id="archetypeDescription" style="font-size:14px;line-height:1.7;color:var(--white);font-weight:400;"></p>
-            </div>
-
-            <div class="details-block">
-                <div class="details-section-title">Сильные стороны</div>
-                <ul class="details-list" id="strengthsList"></ul>
-                <div class="details-divider"></div>
-                <div class="details-section-title">Что улучшить</div>
-                <ul class="details-list" id="improveList"></ul>
-            </div>
-
-            <div class="summary-block">
-                <div class="summary-label">Итог</div>
-                <div class="summary-text" id="summaryText"></div>
-            </div>
-            <div class="details-block">
-                <div class="details-section-title">План на 30 дней</div>
-                <ul class="details-list" id="planList"></ul>
-            </div>
-            <a href="https://t.me/faceai_ru_bot" target="_blank" class="btn-analyze visible" style="display:block;text-align:center;text-decoration:none;margin-bottom:12px;">
-                🔥 Получить персональный план улучшения
-            </a>
-
-            <button class="btn-reset" id="btnReset">Анализировать ещё раз</button>
-        </div>
-
-        <footer>FACE.AI © 2025</footer>
+        <input type="file" id="fileInput" accept="image/*">
+        <button class="btn-analyze" id="btnAnalyze">Анализировать</button>
     </div>
 
-    <script>
-        const uploadZone = document.getElementById('uploadZone');
-        const fileInput = document.getElementById('fileInput');
-        const preview = document.getElementById('preview');
-        const btnAnalyze = document.getElementById('btnAnalyze');
-        const loading = document.getElementById('loading');
-        const results = document.getElementById('results');
-        const errorMsg = document.getElementById('errorMsg');
-        const btnReset = document.getElementById('btnReset');
+    <div class="error-msg" id="errorMsg"></div>
 
-        let selectedFile = null;
+    <div class="loading" id="loading">
+        <div class="loading-bars">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="loading-text">Анализируем...</div>
+    </div>
 
-        const archetypeIcons = {
-            'лис': '🦊', 'fox': '🦊',
-            'охотник': '🦅', 'hunter': '🦅',
-            'красавчик': '✨', 'pretty boy': '✨',
-            'олень': '🦌', 'deer': '🦌',
-            'медведь': '🐻', 'bear': '🐻'
-        };
+    <div class="results" id="results">
 
-        uploadZone.addEventListener('click', () => fileInput.click());
-        uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
-        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-        uploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadZone.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) handleFile(file);
-        });
+        <!-- ОЦЕНКА -->
+        <div class="card card-accent score-block">
+            <div class="card-label">Оценка внешности</div>
+            <div class="score-number" id="scoreNumber">—<span class="score-slash">/10</span></div>
+            <div class="score-comment" id="scoreComment"></div>
+        </div>
 
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files[0]) handleFile(fileInput.files[0]);
-        });
+        <!-- АРХЕТИП -->
+        <div class="card">
+            <div class="two-col">
+                <div>
+                    <div class="card-label">Архетип</div>
+                    <div class="big-name" id="archetypeName">—</div>
+                </div>
+                <div class="big-icon" id="archetypeIcon">✦</div>
+            </div>
+            <div class="card-body" id="archetypeDesc" style="margin-top:14px;"></div>
+        </div>
 
-        function handleFile(file) {
-            selectedFile = file;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                preview.src = e.target.result;
-                uploadZone.classList.add('has-image');
-                btnAnalyze.classList.add('visible');
-                results.classList.remove('visible');
-                errorMsg.classList.remove('visible');
-            };
-            reader.readAsDataURL(file);
-        }
+        <!-- ПОХОЖ НА -->
+        <div class="card">
+            <div class="two-col">
+                <div>
+                    <div class="card-label">Похож на</div>
+                    <div class="big-name" id="celebrityName">—</div>
+                </div>
+                <div class="big-icon">⭐</div>
+            </div>
+            <div class="card-body" id="celebrityDesc" style="margin-top:10px;"></div>
+        </div>
 
-        btnAnalyze.addEventListener('click', async () => {
-            if (!selectedFile) return;
+        <!-- РАЗБОР ЛИЦА -->
+        <div class="card">
+            <div class="card-label">Разбор лица</div>
+            <div id="faceBreakdown"></div>
+        </div>
 
-            btnAnalyze.classList.remove('visible');
-            loading.classList.add('visible');
-            results.classList.remove('visible');
-            errorMsg.classList.remove('visible');
+        <!-- ЦВЕТОТИП -->
+        <div class="card">
+            <div class="two-col">
+                <div>
+                    <div class="card-label">Цветотип</div>
+                    <div class="big-name" id="colorTypeName" style="font-size:24px;">—</div>
+                </div>
+                <div class="big-icon">🎨</div>
+            </div>
+            <div class="card-body" id="colorTypeDesc" style="margin-top:12px;"></div>
+        </div>
 
-            const formData = new FormData();
-            formData.append('photo', selectedFile);
+        <!-- ТИПАЖ КИББИ -->
+        <div class="card">
+            <div class="two-col">
+                <div>
+                    <div class="card-label">Типаж Кибби</div>
+                    <div class="big-name" id="kibbeName" style="font-size:24px;">—</div>
+                </div>
+                <div class="big-icon">👔</div>
+            </div>
+            <div class="card-body" id="kibbeDesc" style="margin-top:12px;"></div>
+        </div>
 
-            try {
-                const response = await fetch('/analyze', { method: 'POST', body: formData });
-                const data = await response.json();
+        <!-- ПРИЧЁСКА -->
+        <div class="card">
+            <div class="two-col">
+                <div style="flex:1">
+                    <div class="card-label">Причёска</div>
+                    <div class="card-body" id="hairstyleText" style="margin-top:6px;"></div>
+                </div>
+                <div class="big-icon" style="margin-left:16px;">✂️</div>
+            </div>
+        </div>
 
-                loading.classList.remove('visible');
+        <!-- СИЛЬНЫЕ СТОРОНЫ + ЧТО УЛУЧШИТЬ -->
+        <div class="card">
+            <div class="card-label">Сильные стороны</div>
+            <ul class="detail-list" id="strengthsList"></ul>
+            <div class="divider-line"></div>
+            <div class="card-label">Зоны роста</div>
+            <ul class="detail-list" id="improveList"></ul>
+        </div>
 
-                if (!data.success) throw new Error(data.error || 'Ошибка сервера');
+        <!-- ПЛАН 30 ДНЕЙ -->
+        <div class="card">
+            <div class="card-label">Персональный план — 30 дней</div>
+            <div id="planItems"></div>
+        </div>
 
-                parseAndDisplay(data.result);
+        <!-- ПОТЕНЦИАЛ -->
+        <div class="card potential-block">
+            <div class="card-label" style="color:var(--gold);">Твой потенциал</div>
+            <div class="card-body" id="potentialText"></div>
+        </div>
 
-            } catch (err) {
-                loading.classList.remove('visible');
-                errorMsg.textContent = 'Ошибка: ' + err.message;
-                errorMsg.classList.add('visible');
-                btnAnalyze.classList.add('visible');
-            }
-        });
+        <!-- CTA -->
+        <a href="https://t.me/faceplan_bot" target="_blank" class="btn-cta">
+            🔥 Получить персональный план улучшения
+        </a>
 
-        function parseAndDisplay(text) {
-            // Parse score
-            const scoreMatch = text.match(/ОЦЕНКА:\s*([\d.]+)/i);
-            const score = scoreMatch ? scoreMatch[1] : '—';
-            document.getElementById('scoreNumber').innerHTML = score + '<span class="score-slash">/10</span>';
+        <button class="btn-reset" id="btnReset">Анализировать ещё раз</button>
+    </div>
 
-            // Parse archetype
-            const archetypeMatch = text.match(/АРХЕТИП:\s*(.+)/i);
-            const archetype = archetypeMatch ? archetypeMatch[1].trim() : '—';
-            document.getElementById('archetypeName').textContent = archetype.toUpperCase();
-            const icon = archetypeIcons[archetype.toLowerCase()] || '✦';
-            document.getElementById('archetypeIcon').textContent = icon;
-            const celebrityMatch = text.match(/ПОХОЖ НА:\s*(.+)/i);
-document.getElementById('celebrityName').textContent = celebrityMatch ? celebrityMatch[1].trim() : '—';
-const descriptionMatch = text.match(/ОПИСАНИЕ АРХЕТИПА:\s*(.+)/i);
-document.getElementById('archetypeDescription').textContent = descriptionMatch ? descriptionMatch[1].trim() : '—';
+    <footer>FACE.AI © 2025</footer>
+</div>
 
-            // Parse strengths
-            const strengthsMatch = text.match(/СИЛЬНЫЕ СТОРОНЫ:([\s\S]*?)(?=ЧТО УЛУЧШИТЬ:|$)/i);
-            const strengthsList = document.getElementById('strengthsList');
-            strengthsList.innerHTML = '';
-            if (strengthsMatch) {
-                const items = strengthsMatch[1].match(/[-•]\s*(.+)/g) || [];
-                items.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item.replace(/^[-•]\s*/, '').trim();
-                    strengthsList.appendChild(li);
-                });
-            }
+<script>
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const btnAnalyze = document.getElementById('btnAnalyze');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const errorMsg = document.getElementById('errorMsg');
+    const btnReset = document.getElementById('btnReset');
 
-            // Parse improvements
-            const improveMatch = text.match(/ЧТО УЛУЧШИТЬ:([\s\S]*?)(?=ИТОГ:|$)/i);
-            const improveList = document.getElementById('improveList');
-            improveList.innerHTML = '';
-            if (improveMatch) {
-                const items = improveMatch[1].match(/[-•]\s*(.+)/g) || [];
-                items.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item.replace(/^[-•]\s*/, '').trim();
-                    improveList.appendChild(li);
-                });
-            }
+    let selectedFile = null;
 
-            // Parse summary
-            const summaryMatch = text.match(/ИТОГ:\s*([\s\S]+)/i);
-            document.getElementById('summaryText').textContent = summaryMatch ? summaryMatch[1].trim() : '';
-            const planMatch = text.match(/ПЛАН НА 30 ДНЕЙ:([\s\S]*?)(?=$)/i);
-const planList = document.getElementById('planList');
-planList.innerHTML = '';
-if (planMatch) {
-    const items = planMatch[1].match(/НЕДЕЛЯ\s*\d+:\s*(.+)/g) || [];
-    items.forEach((item, i) => {
-        const li = document.createElement('li');
-        li.textContent = item.replace(/НЕДЕЛЯ\s*\d+:\s*/, `Неделя ${i+1}: `).trim();
-        planList.appendChild(li);
+    const archetypeIcons = {
+        'лис': '🦊', 'охотник': '🦅', 'красавчик': '✨',
+        'олень': '🦌', 'медведь': '🐻', 'атлет': '💪'
+    };
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) handleFile(file);
     });
-}
 
-            results.classList.add('visible');
-        }
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
 
-        btnReset.addEventListener('click', () => {
-            selectedFile = null;
-            preview.src = '';
-            uploadZone.classList.remove('has-image');
-            btnAnalyze.classList.remove('visible');
+    function handleFile(file) {
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.src = e.target.result;
+            uploadZone.classList.add('has-image');
+            btnAnalyze.classList.add('visible');
             results.classList.remove('visible');
             errorMsg.classList.remove('visible');
-            fileInput.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    btnAnalyze.addEventListener('click', async () => {
+        if (!selectedFile) return;
+        btnAnalyze.classList.remove('visible');
+        loading.classList.add('visible');
+        results.classList.remove('visible');
+        errorMsg.classList.remove('visible');
+
+        const formData = new FormData();
+        formData.append('photo', selectedFile);
+
+        try {
+            const response = await fetch('/analyze', { method: 'POST', body: formData });
+            const data = await response.json();
+            loading.classList.remove('visible');
+            if (!data.success) throw new Error(data.error || 'Ошибка сервера');
+            parseAndDisplay(data.result);
+        } catch (err) {
+            loading.classList.remove('visible');
+            errorMsg.textContent = 'Ошибка: ' + err.message;
+            errorMsg.classList.add('visible');
+            btnAnalyze.classList.add('visible');
+        }
+    });
+
+    function getBlock(text, label, nextLabels) {
+        const pattern = new RegExp(label + ':?\\s*([\\s\\S]*?)(?=' + nextLabels.join(':|') + ':|$)', 'i');
+        const match = text.match(pattern);
+        return match ? match[1].trim() : '';
+    }
+
+    function getFirstLine(block) {
+        return block.split('\n')[0].trim();
+    }
+
+    function getRemainingLines(block) {
+        const lines = block.split('\n');
+        return lines.slice(1).join('\n').trim();
+    }
+
+    function parseList(text) {
+        return (text.match(/[-•*]\s*(.+)/g) || []).map(i => i.replace(/^[-•*]\s*/, '').trim());
+    }
+
+    function parseAndDisplay(text) {
+
+        // ОЦЕНКА
+        const scoreMatch = text.match(/ОЦЕНКА:\s*([\d.]+)/i);
+        const score = scoreMatch ? scoreMatch[1] : '—';
+        document.getElementById('scoreNumber').innerHTML = score + '<span class="score-slash">/10</span>';
+        const scoreBlock = getBlock(text, 'ОЦЕНКА', ['АРХЕТИП', 'ПОХОЖ НА', 'РАЗБОР ЛИЦА']);
+        const scoreLines = scoreBlock.split('\n').filter(l => !l.match(/^\d/));
+        document.getElementById('scoreComment').textContent = scoreLines.slice(1).join(' ').trim();
+
+        // АРХЕТИП
+        const archetypeBlock = getBlock(text, 'АРХЕТИП', ['ПОХОЖ НА', 'РАЗБОР ЛИЦА', 'ЦВЕТОТИП']);
+        const archetypeLine = getFirstLine(archetypeBlock);
+        document.getElementById('archetypeName').textContent = archetypeLine.toUpperCase();
+        const icon = archetypeIcons[archetypeLine.toLowerCase()] || '✦';
+        document.getElementById('archetypeIcon').textContent = icon;
+        document.getElementById('archetypeDesc').textContent = getRemainingLines(archetypeBlock);
+
+        // ПОХОЖ НА
+        const celebBlock = getBlock(text, 'ПОХОЖ НА', ['РАЗБОР ЛИЦА', 'ЦВЕТОТИП', 'ТИПАЖ']);
+        const celebLine = getFirstLine(celebBlock);
+        document.getElementById('celebrityName').textContent = celebLine;
+        document.getElementById('celebrityDesc').textContent = getRemainingLines(celebBlock);
+
+        // РАЗБОР ЛИЦА
+        const faceBlock = getBlock(text, 'РАЗБОР ЛИЦА', ['ЦВЕТОТИП', 'ТИПАЖ КИББИ', 'ПРИЧЁСКА', 'СИЛЬНЫЕ']);
+        const faceItems = [
+            { key: 'ГЛАЗА', icon: '👁' },
+            { key: 'КОСТНАЯ СТРУКТУРА', icon: '🦴' },
+            { key: 'КОЖА', icon: '🧴' },
+            { key: 'БРОВИ', icon: '✏️' },
+            { key: 'СИММЕТРИЯ', icon: '⚖️' },
+        ];
+        const faceContainer = document.getElementById('faceBreakdown');
+        faceContainer.innerHTML = '';
+        faceItems.forEach(item => {
+            const match = faceBlock.match(new RegExp('-\\s*' + item.key + ':\\s*(.+)', 'i'));
+            if (match) {
+                const div = document.createElement('div');
+                div.className = 'face-item';
+                div.innerHTML = `
+                    <div class="face-icon">${item.icon}</div>
+                    <div class="face-content">
+                        <div class="face-title">${item.key}</div>
+                        <div class="face-text">${match[1].trim()}</div>
+                    </div>`;
+                faceContainer.appendChild(div);
+            }
         });
-    </script>
+
+        // ЦВЕТОТИП
+        const colorBlock = getBlock(text, 'ЦВЕТОТИП', ['ТИПАЖ КИББИ', 'ПРИЧЁСКА', 'СИЛЬНЫЕ']);
+        document.getElementById('colorTypeName').textContent = getFirstLine(colorBlock);
+        document.getElementById('colorTypeDesc').textContent = getRemainingLines(colorBlock);
+
+        // ТИПАЖ КИББИ
+        const kibbeBlock = getBlock(text, 'ТИПАЖ КИББИ', ['ПРИЧЁСКА', 'СИЛЬНЫЕ', 'ЧТО УЛУЧШИТЬ']);
+        document.getElementById('kibbeName').textContent = getFirstLine(kibbeBlock);
+        document.getElementById('kibbeDesc').textContent = getRemainingLines(kibbeBlock);
+
+        // ПРИЧЁСКА
+        const hairBlock = getBlock(text, 'ПРИЧЁСКА', ['СИЛЬНЫЕ', 'ЧТО УЛУЧШИТЬ', 'ПЛАН']);
+        document.getElementById('hairstyleText').textContent = hairBlock;
+
+        // СИЛЬНЫЕ СТОРОНЫ
+        const strengthsBlock = getBlock(text, 'СИЛЬНЫЕ СТОРОНЫ', ['ЧТО УЛУЧШИТЬ', 'ПЛАН', 'ИТОГ']);
+        const strengthsList = document.getElementById('strengthsList');
+        strengthsList.innerHTML = '';
+        parseList(strengthsBlock).forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            strengthsList.appendChild(li);
+        });
+
+        // ЧТО УЛУЧШИТЬ
+        const improveBlock = getBlock(text, 'ЧТО УЛУЧШИТЬ', ['ПЛАН НА 30', 'ИТОГ', 'ПОТЕНЦИАЛ']);
+        const improveList = document.getElementById('improveList');
+        improveList.innerHTML = '';
+        parseList(improveBlock).forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            improveList.appendChild(li);
+        });
+
+        // ПЛАН
+        const planBlock = getBlock(text, 'ПЛАН НА 30 ДНЕЙ', ['ПОТЕНЦИАЛ', 'ИТОГ']);
+        const planContainer = document.getElementById('planItems');
+        planContainer.innerHTML = '';
+        const weekMatches = planBlock.match(/НЕДЕЛЯ\s*(\d+):\s*(.+)/gi) || [];
+        weekMatches.forEach((item, i) => {
+            const text_part = item.replace(/НЕДЕЛЯ\s*\d+:\s*/i, '').trim();
+            const div = document.createElement('div');
+            div.className = 'plan-item';
+            div.innerHTML = `
+                <div class="plan-week">W${i+1}</div>
+                <div class="plan-text">${text_part}</div>`;
+            planContainer.appendChild(div);
+        });
+
+        // ПОТЕНЦИАЛ
+        const potentialBlock = getBlock(text, 'ПОТЕНЦИАЛ', ['$$$']);
+        document.getElementById('potentialText').textContent = potentialBlock;
+
+        results.classList.add('visible');
+        setTimeout(() => results.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+
+    btnReset.addEventListener('click', () => {
+        selectedFile = null;
+        preview.src = '';
+        uploadZone.classList.remove('has-image');
+        btnAnalyze.classList.remove('visible');
+        results.classList.remove('visible');
+        errorMsg.classList.remove('visible');
+        fileInput.value = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
 </body>
 </html>
