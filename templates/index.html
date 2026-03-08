@@ -523,6 +523,10 @@
                 <div class="summary-label">Итог</div>
                 <div class="summary-text" id="summaryText"></div>
             </div>
+            <div class="details-block">
+                <div class="details-section-title">План на 30 дней</div>
+                <ul class="details-list" id="planList"></ul>
+            </div>
 
             <button class="btn-reset" id="btnReset">Анализировать ещё раз</button>
         </div>
@@ -652,6 +656,17 @@ document.getElementById('archetypeDescription').textContent = descriptionMatch ?
             // Parse summary
             const summaryMatch = text.match(/ИТОГ:\s*([\s\S]+)/i);
             document.getElementById('summaryText').textContent = summaryMatch ? summaryMatch[1].trim() : '';
+            const planMatch = text.match(/ПЛАН НА 30 ДНЕЙ:([\s\S]*?)(?=$)/i);
+const planList = document.getElementById('planList');
+planList.innerHTML = '';
+if (planMatch) {
+    const items = planMatch[1].match(/НЕДЕЛЯ\s*\d+:\s*(.+)/g) || [];
+    items.forEach((item, i) => {
+        const li = document.createElement('li');
+        li.textContent = item.replace(/НЕДЕЛЯ\s*\d+:\s*/, `Неделя ${i+1}: `).trim();
+        planList.appendChild(li);
+    });
+}
 
             results.classList.add('visible');
         }
