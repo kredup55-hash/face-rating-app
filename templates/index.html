@@ -493,10 +493,18 @@
 
             <div class="archetype-block">
                 <div>
+                    
                     <div class="archetype-label">Архетип лица</div>
                     <div class="archetype-name" id="archetypeName">—</div>
                 </div>
                 <div class="archetype-icon" id="archetypeIcon">🦊</div>
+            </div>
+            <div class="archetype-block">
+                <div>
+                    <div class="archetype-label">Похож на</div>
+                    <div class="archetype-name" id="celebrityName">—</div>
+                </div>
+                <div class="archetype-icon">⭐</div>
             </div>
 
             <div class="details-block">
@@ -606,6 +614,8 @@
             document.getElementById('archetypeName').textContent = archetype.toUpperCase();
             const icon = archetypeIcons[archetype.toLowerCase()] || '✦';
             document.getElementById('archetypeIcon').textContent = icon;
+            const celebrityMatch = text.match(/ПОХОЖ НА:\s*(.+)/i);
+document.getElementById('celebrityName').textContent = celebrityMatch ? celebrityMatch[1].trim() : '—';
 
             // Parse strengths
             const strengthsMatch = text.match(/СИЛЬНЫЕ СТОРОНЫ:([\s\S]*?)(?=ЧТО УЛУЧШИТЬ:|$)/i);
